@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SEVASCAN TOTAL DESCENTRALIZED DEX</title>
+    <style>
+        body {
+            background-color: #0d0d13;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: #13131a;
+            border: 1px solid #232330;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            margin-top: 40px;
+        }
+        h1 { text-align: center; color: #00ffcc; font-size: 22px; letter-spacing: 1px; }
+        .price-box {
+            background: #1a1a24;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            margin: 20px 0;
+            border-left: 4px solid #00ffcc;
+        }
+        .price-val { font-size: 28px; font-weight: bold; color: #fff; margin-top: 5px; }
+        .badge { display: inline-block; background: #232330; padding: 4px 8px; border-radius: 4px; font-size: 12px; color: #a0a0b0; margin: 5px; }
+        .panel { border: 1px solid #232330; border-radius: 8px; padding: 15px; margin: 15px 0; background: #161622; }
+        .panel-title { font-weight: bold; color: #00ffcc; margin-bottom: 10px; border-bottom: 1px solid #232330; padding-bottom: 5px; }
+        label { display: block; font-size: 13px; color: #a0a0b0; margin-bottom: 5px; }
+        select, input { width: 100%; padding: 10px; background: #0d0d13; border: 1px solid #232330; border-radius: 6px; color: white; box-sizing: border-box; margin-bottom: 15px; font-size: 15px; }
+        button { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 15px; transition: background 0.2s; }
+        .btn-buy { background: #00ffcc; color: #0d0d13; }
+        .btn-buy:hover { background: #00cc55; }
+        .btn-sell { background: #ff3366; color: white; }
+        .btn-sell:hover { background: #dd2255; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🔒 SEVASCAN TOTAL DESCENTRALIZED DEX</h1>
+
+        <div class="price-box">
+            <span>SEVASCAN PRICE (SEV)</span>
+            <div class="price-val" id="seva-price">25.00 USDT</div>
+            <span class="badge">Algorithmic Deflation</span>
+            <span class="badge">+0.01 per Trade</span>
+        </div>
+
+        <div style="text-align: center; color: #a0a0b0; font-size: 14px;">
+            Total Network Trades: <strong id="trade-count">0</strong>
+        </div>
+
+        <!-- COMPRA -->
+        <div class="panel">
+            <div class="panel-title">BUY PANEL (IN)</div>
+            <label>CURRENCY YOU PAY WITH</label>
+            <select id="buy-currency">
+                <option value="usdt">USDT (Stablecoin)</option>
+                <option value="ltc">Litecoin (LTC)</option>
+                <option value="btc">Bitcoin (BTC)</option>
+                <option value="doge">Dogecoin (DOGE)</option>
+                <option value="eth">Ethereum (ETH)</option>
+                <option value="sol">Solana (SOL)</option>
+            </select>
+
+            <label>AMOUNT TO SEND</label>
+            <input type="number" id="buy-amount" placeholder="0.00" step="0.00000001">
+
+            <label>ESTIMATED RECEIVED IN SEV</label>
+            <input type="text" id="buy-est" placeholder="0.0000" disabled>
+
+            <button class="btn-buy" id="btn-buy">EXECUTE ANONYMOUS BUY</button>
+        </div>
+
+        <!-- VENTA -->
+        <div class="panel">
+            <div class="panel-title">SELL PANEL (OUT)</div>
+            <label>AMOUNT OF SEV TO SELL</label>
+            <input type="number" id="sell-amount" placeholder="0.00" step="0.01">
+
+            <label>CURRENCY YOU WANT TO RECEIVE</label>
+            <select id="sell-currency">
+                <option value="usdt">USDT (Stablecoin)</option>
+                <option value="ltc">Litecoin (LTC)</option>
+                <option value="btc">Bitcoin (BTC)</option>
+                <option value="doge">Dogecoin (DOGE)</option>
+                <option value="eth">Ethereum (ETH)</option>
+                <option value="sol">Solana (SOL)</option>
+            </select>
+
+            <label>ESTIMATED RECEIVED</label>
+            <input type="text" id="sell-est" placeholder="0.0000" disabled>
+
+            <button class="btn-sell" id="btn-sell">EXECUTE ANONYMOUS SELL</button>
+        </div>
+    </div>
+
+    <script>
+        let preciosActuales = { usdt: 25.00, ltc: 0.43, btc: 0.00027, doge: 42.30, eth: 0.0092, sol: 0.13 };
+        let totalTrades = 0;
+
+        async function obtenerPrecios() {
+            try {
+                const res = await fetch('/api/dex/precio');
+                const data = await res.json();
+                if(data.status === "success") {
+                    preciosActuales = data.market_rates;
+                    actualizarPantallaPrecios();
+                }
+            } catch (err) {
+                console.error("Error fetching rates:", err);
+            }
+        }
+
+        function actualizarPantallaPrecios() {
+            document.getElementById('seva-price').innerText = `${parseFloat(preciosActuales.usdt).toFixed(2)} USDT`;
+        }
+
+        async function enviarIntercambio(moneda, cantidad, precioSimulado) {
+            try {
+                const respuesta = await fetch('/api/dex/intercambio', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        direccionSevascan: "SEVA_WALLET_ANONYMOUS_DEX",
+                        cantidad: parseFloat(cantidad),
+                        txidRespaldo: "TX_" + Math.random().toString(36).substr(2, 9).toUpperCase(),
+                        monedaPago: moneda,
+                        precio: parseFloat(precioSimulado),
+                        usdtDestinoVendedor: moneda === 'usdt' ? 'DEX_RESERVE_POOL' : undefined,
+                        lang: 'en'
+                    })
+                });
+
+                const resultado = await respuesta.json();
+
+                if (respuesta.ok && resultado.status === "ok") {
+                    alert("Trade executed successfully!");
+                    totalTrades++;
+                    document.getElementById('trade-count').innerText = totalTrades;
+                    preciosActuales = resultado.new_prices;
+                    actualizarPantallaPrecios();
+                } else {
+                    alert("Error executing trade: " + (resultado.error || 'Unknown Error'));
+                }
+            } catch (error) {
+                alert("Error executing trade: " + error.message);
+            }
+        }
+
+        document.getElementById('btn-buy').addEventListener('click', () => {
+            const moneda = document.getElementById('buy-currency').value;
+            const cantidad = document.getElementById('buy-amount').value;
+            if(!cantidad || cantidad <= 0) return alert("Please enter a valid amount");
+            enviarIntercambio(moneda, cantidad, preciosActuales[moneda]);
+        });
+
+        document.getElementById('btn-sell').addEventListener('click', () => {
+            const moneda = document.getElementById('sell-currency').value;
+            const cantidad = document.getElementById('sell-amount').value;
+            if(!cantidad || cantidad <= 0) return alert("Please enter a valid amount");
+            enviarIntercambio(moneda, cantidad, preciosActuales[moneda]);
+        });
+
+        obtenerPrecios();
+    </script>
+</body>
+</html>

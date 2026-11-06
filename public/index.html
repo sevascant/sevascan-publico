@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SEVASCAN TOTAL DESCENTRALIZED DEX</title>
+    <style>
+        body {
+            background-color: #0d0d13;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #lang-selector-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 999999;
+        }
+        #lang-dropdown {
+            background: #1a1a24;
+            color: #00ffcc;
+            border: 2px solid #00ffcc;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            outline: none;
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
+        }
+        #lang-dropdown option {
+            background: #13131a;
+            color: #fff;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: #13131a;
+            border: 1px solid #232330;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            margin-top: 40px;
+        }
+        h1 { text-align: center; color: #00ffcc; font-size: 22px; letter-spacing: 1px; }
+        .price-box {
+            background: #1a1a24;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            margin: 20px 0;
+            border-left: 4px solid #00ffcc;
+        }
+        .price-val { font-size: 28px; font-weight: bold; color: #fff; margin-top: 5px; }
+        .badge { display: inline-block; background: #232330; padding: 4px 8px; border-radius: 4px; font-size: 12px; color: #a0a0b0; margin: 5px; }
+        .panel { border: 1px solid #232330; border-radius: 8px; padding: 15px; margin: 15px 0; background: #161622; }
+        .panel-title { font-weight: bold; color: #00ffcc; margin-bottom: 10px; border-bottom: 1px solid #232330; padding-bottom: 5px; }
+        label { display: block; font-size: 13px; color: #a0a0b0; margin-bottom: 5px; }
+        select, input { width: 100%; padding: 10px; background: #0d0d13; border: 1px solid #232330; border-radius: 6px; color: white; box-sizing: border-box; margin-bottom: 15px; font-size: 15px; }
+        button { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 15px; transition: background 0.2s; }
+        .btn-buy { background: #00ffcc; color: #0d0d13; }
+        .btn-buy:hover { background: #00cc55; }
+        .btn-sell { background: #ff3366; color: white; }
+        .btn-sell:hover { background: #dd2255; }
+    </style>
+</head>
+<body>
+
+    <div id="lang-selector-container">
+        <select id="lang-dropdown">
+            <option value="en" selected>🇬🇧 English</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="it">🇮🇹 Italiano</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="zh">🇨🇳 中文</option>
+        </select>
+    </div>
+
+    <div class="container">
+        <h1 id="t-main">🔒 SEVASCAN TOTAL DESCENTRALIZED DEX</h1>
+        
+        <div class="price-box">
+            <span id="t-price-lbl">SEVASCAN PRICE (SEV)</span>
+            <div class="price-val" id="seva-price">25.00 USDT</div>
+            <span class="badge" id="t-deflation">Algorithmic Deflation</span>
+            <span class="badge" id="t-increment">+0.01 per Trade</span>
+        </div>
+
+        <div style="text-align: center; color: #a0a0b0; font-size: 14px;">
+            <span id="t-trades">Total Network Trades</span>: <strong id="trade-count">0</strong>
+        </div>
+
+        <!-- COMPRA -->
+        <div class="panel">
+            <div class="panel-title" id="t-buy-title">BUY PANEL (IN)</div>
+            <label id="t-buy-pay">CURRENCY YOU PAY WITH</label>
+            <select id="buy-currency">
+                <option value="usdt">USDT (Stablecoin)</option>
+                <option value="ltc">Litecoin (LTC)</option>
+                <option value="btc">Bitcoin (BTC)</option>
+                <option value="doge">Dogecoin (DOGE)</option>
+            </select>
+            
+            <label id="t-buy-amount">AMOUNT TO SEND</label>
+            <input type="number" id="buy-amount" placeholder="0.00" step="0.01">
+            
+            <label id="t-buy-receive">ESTIMATED RECEIVED IN SEV</label>
+            <input type="text" id="buy-est" placeholder="0.0000" disabled>
+            
+            <button class="btn-buy" id="t-btn-buy">EXECUTE ANONYMOUS BUY</button>
+        </div>
+
+        <!-- VENTA -->
+        <div class="panel">
+            <div class="panel-title" id="t-sell-title">SELL PANEL (OUT)</div>
+            <label id="t-sell-amount">AMOUNT OF SEV TO SELL</label>
+            <input type="number" id="sell-amount" placeholder="0.00" step="0.01">
+            
+            <label id="t-sell-receive-lbl">CURRENCY YOU WANT TO RECEIVE</label>
+            <select id="sell-currency">
+                <option value="usdt">USDT (Stablecoin)</option>
+                <option value="ltc">Litecoin (LTC)</option>
+                <option value="btc">Bitcoin (BTC)</option>
+                <option value="doge">Dogecoin (DOGE)</option>
+            </select>
+            
+            <label id="t-sell-est-lbl">ESTIMATED RECEIVED</label>
+            <input type="text" id="sell-est" placeholder="0.0000" disabled>
+            
+            <button class="btn-sell" id="t-btn-sell">EXECUTE ANONYMOUS SELL</button>
+        </div>
+    </div>
+
+    <script>
+        const diccionario = {
+            en: {
+                main: "🔒 SEVASCAN TOTAL DESCENTRALIZED DEX",
+                priceLbl: "SEVASCAN PRICE (SEV)",
+                deflation: "Algorithmic Deflation",
+                increment: "+0.01 per Trade",
+                trades: "Total Network Trades",
+                buyTitle: "BUY PANEL (IN)",
+                buyPay: "CURRENCY YOU PAY WITH",
+                buyAmount: "AMOUNT TO SEND",
+                buyReceive: "ESTIMATED RECEIVED IN SEV",
+                btnBuy: "EXECUTE ANONYMOUS BUY",
+                sellTitle: "SELL PANEL (OUT)",
+                sellAmount: "AMOUNT OF SEV TO SELL",
+                sellReceiveLbl: "CURRENCY YOU WANT TO RECEIVE",
+                sellEstLbl: "ESTIMATED RECEIVED",
+                btnSell: "EXECUTE ANONYMOUS SELL"
+            },
+            es: {
+                main: "🔒 SEVASCAN TOTAL DESCENTRALIZED DEX",
+                priceLbl: "PRECIO SEVASCAN (SEV)",
+                deflation: "Deflación Algorítmica",
+                increment: "+0.01 por Trade",
+                trades: "Trades de Red Totales",
+                buyTitle: "PANEL DE COMPRA (IN)",
+                buyPay: "MONEDA CON LA QUE PAGAS",
+                buyAmount: "CANTIDAD A ENVIAR",
+                buyReceive: "RECIBES ESTIMADO EN SEV",
+                btnBuy: "EJECUTAR COMPRA ANÓNIMA",
+                sellTitle: "PANEL DE VENTA (OUT)",
+                sellAmount: "CANTIDAD DE SEV A VENDER",
+                sellReceiveLbl: "MONEDA QUE DESEAS RECIBIR",
+                sellEstLbl: "RECIBES ESTIMADO",
+                btnSell: "EJECUTAR VENTA ANÓNIMA"
+            },
+            de: {
+                main: "🔒 SEVASCAN TOTAL DESCENTRALIZED DEX",
+                priceLbl: "SEVASCAN KURS (SEV)",
+                deflation: "Algorithmische Deflation",
+                increment: "+0.01 pro Trade",
+                trades: "Netzwerk-Trades Gesamt",
+                buyTitle: "KAUFPANEL (IN)",
+                buyPay: "WÄHRUNG ZUM BEZAHLEN",
+                buyAmount: "BETRAG ZUM SENDEN",
+                buyReceive: "GESCHÄTZTER EMPFANG IN SEV",
+                btnBuy: "ANONYMEN KAUF AUSFÜHREN",
+                sellTitle: "VERKAUFSPANEL (OUT)",
+                sellAmount: "SEV-MENGE ZUM VERKAUFEN",
+                sellReceiveLbl: "GEWÜNSCHTE WÄHRUNG ERHALTEN",
+                sellEstLbl: "GESCHÄTZTER ERTRAG",
+                btnSell: "ANONYMEN VERKAUF AUSFÜHREN"
+            },
+            it: {
+                main: "🔒 SEVASCAN TOTAL DESCENTRALIZED DEX",
+                priceLbl: "PREZZO SEVASCAN (SEV)",
+                deflation: "Deflazione Algoritmica",
+                increment: "+0.01 per Trade",
+                trades: "Transazioni di Rete Totali",
+                buyTitle: "PANNELLO DI ACQUISTO (IN)",
+                buyPay: "VALUTA CON CUI PAGHI",
+                buyAmount: "IMPORTO DA INVIARE",
+                buyReceive: "RICEVUTO STIMATO IN SEV",
+                btnBuy: "ESEGUI ACQUISTO ANONIMO",
+                sellTitle: "PANNELLO DI VENDITA (OUT)",
+                sellAmount: "QUANTITÀ DI SEV DA VENDERE",
+                sellReceiveLbl: "VALUTA CHE DESIDERI RICEVERE",
+                sellEstLbl: "RICEVUTO STIMATO",
+                btnSell: "ESEGUI VENDITA ANONIMA"
+            },
+            fr: {
+                main: "🔒 SEVASCAN TOTAL DESCENTRALIZED DEX",
+                priceLbl: "PRIX SEVASCAN (SEV)",
+                deflation: "Déflation Algorithmique",
+                increment: "+0.01 par Trade",
+                trades: "Transactions Réseau Totales",
+                buyTitle: "PANNEAU D'ACHAT (IN)",
+                buyPay: "DEVISE DE PAIEMENT",
+                buyAmount: "MONTANT À ENVOYER",
+                buyReceive: "ESTIMATION REÇUE EN SEV",
+                btnBuy: "EXÉCUTER UN ACHAT ANONYME",
+                sellTitle: "PANNEAU DE VENTE (OUT)",
+                sellAmount: "MONTANT DE SEV À VENDRE",
+                sellReceiveLbl: "DEVISE QUE VOUS SOUHAITEZ RECEVOIR",
+
+sellEstLbl: "ESTIMATION REÇUE",
+btnSell: "EXÉCUTER UNE VENTE ANONYME"
+},
+zh: {
+main: "🔒 SEVASCAN 全去中心化交易所",
+priceLbl: "SEVASCAN (SEV) 价格",
+deflation: "通缩算法模型",
+increment: "每次交易增加 +0.01",
+trades: "全网总交易次数",
+buyTitle: "买入面板 (IN)",
+buyPay: "支付币种",
+buyAmount: "发送数量",
+buyReceive: "预计收到 SEV",
+btnBuy: "执行匿名买入",
+sellTitle: "卖出面板 (OUT)",
+sellAmount: "出售 SEV 数量",
+sellReceiveLbl: "想要收到的币种",
+sellEstLbl: "预计收到金额",
+btnSell: "执行匿名卖出"
+}
+};
+let currentPriceUSDT = 25.00;
+let rates = { usdt: 1, ltc: 58.11, btc: 91709.97, doge: 0.59 };
+function setLanguage(lang) {
+document.documentElement.lang = lang;
+const d = diccionario[lang] || diccionario['en'];
+document.getElementById('t-main').innerText = d.main;
+document.getElementById('t-price-lbl').innerText = d.priceLbl;
+document.getElementById('t-deflation').innerText = d.deflation;
+document.getElementById('t-increment').innerText = d.increment;
+document.getElementById('t-trades').innerText = d.trades;
+document.getElementById('t-buy-title').innerText = d.buyTitle;
+document.getElementById('t-buy-pay').innerText = d.buyPay;
+document.getElementById('t-buy-amount').innerText = d.buyAmount;
+document.getElementById('t-buy-receive').innerText = d.buyReceive;
+document.getElementById('t-btn-buy').innerText = d.btnBuy;
+document.getElementById('t-sell-title').innerText = d.sellTitle;
+document.getElementById('t-sell-amount').innerText = d.sellAmount;
+document.getElementById('t-sell-receive-lbl').innerText = d.sellReceiveLbl;
+document.getElementById('t-sell-est-lbl').innerText = d.sellEstLbl;
+document.getElementById('t-btn-sell').innerText = d.btnSell;
+}
+function calcularEstimaciones() {
+const buyAmt = parseFloat(document.getElementById('buy-amount').value);
+const buyCurr = document.getElementById('buy-currency').value;
+const buyEstInput = document.getElementById('buy-est');
+if (!isNaN(buyAmt) && buyAmt > 0) {
+let buyInUSDT = buyAmt;
+if (buyCurr !== 'usdt') buyInUSDT = buyAmt * rates[buyCurr];
+const totalSEVReceived = currentPriceUSDT > 0 ? (buyInUSDT / currentPriceUSDT) : 0;
+buyEstInput.value = totalSEVReceived.toFixed(4);
+} else {
+buyEstInput.value = "";
+}
+const sellAmt = parseFloat(document.getElementById('sell-amount').value);
+const sellCurr = document.getElementById('sell-currency').value;
+const sellEstInput = document.getElementById('sell-est');
+if (!isNaN(sellAmt) && sellAmt > 0) {
+const sellInUSDT = sellAmt * currentPriceUSDT;
+let finalReceived = sellInUSDT;
+if (sellCurr !== 'usdt') finalReceived = sellInUSDT / rates[sellCurr];
+sellEstInput.value = finalReceived.toFixed(4);
+} else {
+sellEstInput.value = "";
+}
+}
+document.getElementById('lang-dropdown').addEventListener('change', (e) => {
+setLanguage(e.target.value);
+});
+document.getElementById('buy-amount').addEventListener('input', calcularEstimaciones);
+document.getElementById('sell-amount').addEventListener('input', calcularEstimaciones);
+document.getElementById('buy-currency').addEventListener('change', calcularEstimaciones);
+document.getElementById('sell-currency').addEventListener('change', calcularEstimaciones);
+let tradesLocales = 0;
+function registrarTradeYSubirPrecio() {
+tradesLocales++;
+document.getElementById('trade-count').innerText = tradesLocales;
+calcularEstimaciones();
+}
+async function fetchPrice() {
+try {
+const res = await fetch('/api/dex/precio');
+const data = await res.json();
+if(data && data.market_rates) {
+currentPriceUSDT = parseFloat(data.market_rates.usdt);
+document.getElementById('seva-price').innerText = currentPriceUSDT.toFixed(2) + ' USDT';
+calcularEstimaciones();
+}
+} catch(e) { console.log("Sync..."); }
+}
+document.getElementById('t-btn-buy').addEventListener('click', registrarTradeYSubirPrecio);
+document.getElementById('t-btn-sell').addEventListener('click', registrarTradeYSubirPrecio);
+setInterval(fetchPrice, 2000);
+fetchPrice();
+setLanguage('en');
+
+
+

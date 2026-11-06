@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sevascan Advanced DEX</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .dex-container {
+            background-color: #1e1e1e;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #00ffcc;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #aaaaaa;
+        }
+        select, input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #333;
+            background-color: #2a2a2a;
+            color: #fff;
+            box-sizing: border-box;
+        }
+        .fiat-box {
+            background-color: #252525;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-weight: bold;
+            color: #00ffcc;
+            border: 1px solid #333;
+        }
+        small {
+            color: #888888;
+            display: block;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dex-container">
+        <h2>Sevascan DEX</h2>
+        
+        <div class="form-group">
+            <label id="lbl-select-coin">Selecciona moneda de pago:</label>
+            <select id="coinSelect" onchange="updatePriceDisplay()">
+                <option value="LTC">Litecoin (LTC)</option>
+                <option value="BTC">Bitcoin (BTC)</option>
+                <option value="DOGE">Dogecoin (DOGE)</option>
+                <option value="usdt">Tether (USDT)</option>
+            </select>
+        </div>
+
+        <!-- Conversión Matemática en Pantalla -->
+        <div class="fiat-box">
+            ≈ <span id="price-usdt">0.0000</span> USDT | ≈ <span id="price-eur">0.0000</span> EUR
+        </div>
+
+        <br>
+        <small id="lbl-algo-note">El precio sube con cada intercambio realizado.</small>
+    </div>
+
+    <script>
+        function updatePriceDisplay() {
+            const coin = document.getElementById('coinSelect').value;
+            console.log("Moneda seleccionada: " + coin);
+        }
+    </script>
+</body>
+</html>
